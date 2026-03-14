@@ -9,15 +9,15 @@ spec:
   ref:
     tag: "1.4.0"
 ---
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
 metadata:
   name: gateway-api-crds
   namespace: flux-system
 spec:
   interval: 1h
-  sourceRef:
+  chartRef:
     kind: OCIRepository
     name: gateway-api-crds
-  path: ./
-  prune: true
+  install:
+    crds: CreateReplace
