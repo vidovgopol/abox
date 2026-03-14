@@ -44,7 +44,7 @@ spec:
       image:
         tag: 0.7.23
     kagent-tools:
-      fullnameOverride: kagent-tool-server
+      nameOverride: kagent-tool-server
     tools:
       querydoc:
         enabled: false
@@ -54,8 +54,6 @@ spec:
       cilium-manager-agent:
         enabled: false
       cilium-debug-agent:
-        enabled: false
-      promql-agent:
         enabled: false
       istio-agent:
         enabled: false
