@@ -1,6 +1,7 @@
 help:
 	@echo "Available targets:"
 	@echo "  run    - Bootstrap the full environment (install tools, provision cluster)"
+	@echo "  down   - Destroy the cluster and all resources"
 	@echo "  tools  - Install necessary tools only"
 	@echo "  tofu   - Initialize OpenTofu"
 	@echo "  apply  - Apply OpenTofu configuration"
@@ -17,3 +18,6 @@ tofu:
 
 apply:
 	@cd bootstrap && tofu apply -auto-approve
+
+down:
+	@cd bootstrap && tofu destroy -auto-approve
