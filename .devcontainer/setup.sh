@@ -39,14 +39,6 @@ log "tofu apply done"
 
 cd ..
 
-# Install Gateway API CRDs (required by agentgateway)
-log "Installing Gateway API CRDs..."
-kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
-
-# Install GatewayClass + Gateway
-log "Applying gatewayapi/..."
-kubectl apply -f gatewayapi/
-
 # Install cloud-provider-kind (LoadBalancer support)
 log "Installing cloud-provider-kind..."
 ARCH=$(dpkg --print-architecture)
