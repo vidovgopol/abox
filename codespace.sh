@@ -53,12 +53,11 @@ log "cloud-provider-kind started (pid $!)"
 
 # Install Gateway API CRDs
 log "Installing Gateway API CRDs..."
-kubectl apply --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
+kubectl apply --kubeconfig /home/codespace/.kube/config --server-side -f https://github.com/kubernetes-sigs/gateway-api/releases/download/v1.4.0/standard-install.yaml
 
 # Apply GatewayClass + Gateway
 log "Applying gatewayapi/Gateway.yaml..."
-kubectl delete gatewayclass agentgateway --ignore-not-found
-kubectl apply -f gatewayapi/Gateway.yaml
+kubectl apply --kubeconfig /home/codespace/.kube/config -f gatewayapi/Gateway.yaml
 
 # Wait for LoadBalancer IP
 log "Waiting for LoadBalancer IP..."
