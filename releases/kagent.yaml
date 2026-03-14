@@ -45,3 +45,6 @@ spec:
         enabled: false
       istio-manager-agent:
         enabled: false
+    providers:
+      openAI:
+        apiKey: OPENAI_API_KEY
