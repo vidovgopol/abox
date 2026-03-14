@@ -33,13 +33,6 @@ cd bootstrap
 tofu init
 log "tofu init done"
 
-# Apply — requires GITHUB_TOKEN codespace secret
-if [[ -z "${TF_VAR_github_token:-}" ]]; then
-  log "ERROR: GITHUB_TOKEN secret not set — cannot provision cluster"
-  log "Set it at: github.com/settings/codespaces -> Secrets"
-  exit 1
-fi
-
 log "Running tofu apply..."
 tofu apply -auto-approve
 log "tofu apply done"
