@@ -24,14 +24,23 @@ resource "null_resource" "wait_for_gateway_api_crds" {
   provisioner "local-exec" {
     command = <<-EOT
       echo "Waiting for Gateway API CRDs..."
-      until kubectl get crd gateways.gateway.networking.k8s.io >/dev/null 2>&1; do
+      until kubectl \
+        --server="${SERVER}" \
+        --client-certificate=<(echo "$CLIENT_CERT") \
+        --client-key=<(echo "$CLIENT_KEY") \
+        --certificate-authority=<(echo "$CA_CERT") \
+        get crd gateways.gateway.networking.k8s.io >/dev/null 2>&1; do
         echo "  not ready yet, retrying in 5s..."
         sleep 5
       done
       echo "Gateway API CRDs ready."
     EOT
+    interpreter = ["/bin/bash", "-c"]
     environment = {
-      KUBECONFIG = kind_cluster.this.kubeconfig_path
+      SERVER      = kind_cluster.this.endpoint
+      CLIENT_CERT = kind_cluster.this.client_certificate
+      CLIENT_KEY  = kind_cluster.this.client_key
+      CA_CERT     = kind_cluster.this.cluster_ca_certificate
     }
   }
 }
