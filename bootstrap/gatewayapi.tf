@@ -1,35 +1,14 @@
 # ==========================================
-# Gateway API CRDs
+# Flux OCIRepository + Kustomization
+# points at OCI artifact pushed by CI
 # ==========================================
-resource "helm_release" "gateway_api_crds" {
-  depends_on       = [kind_cluster.this]
-  name             = "gateway-api-crds"
-  namespace        = "gateway-api-system"
+resource "helm_release" "flux_config" {
+  depends_on = [helm_release.flux_instance]
+
+  name             = "flux-config"
+  namespace        = "flux-system"
   repository       = "oci://ghcr.io/den-vasyliev"
-  chart            = "gateway-api-crds"
-  version          = "1.4.0"
-  create_namespace = true
-}
-
-# ==========================================
-# Bootstrap Agentgateway
-# ==========================================
-resource "helm_release" "agentgateway_crds" {
-  depends_on       = [helm_release.gateway_api_crds]
-  name             = "agentgateway-crds"
-  namespace        = "agentgateway-system"
-  repository       = "oci://ghcr.io/kgateway-dev/charts"
-  chart            = "kgateway-crds"
-  version          = "2.3.0-main"
-  create_namespace = true
-}
-
-resource "helm_release" "agentgateway" {
-  depends_on       = [helm_release.agentgateway_crds]
-  name             = "agentgateway"
-  namespace        = "agentgateway-system"
-  repository       = "oci://ghcr.io/kgateway-dev/charts"
-  chart            = "kgateway"
-  version          = "2.3.0-main"
-  create_namespace = true
+  chart            = "flux-config"
+  version          = "0.1.0"
+  create_namespace = false
 }
