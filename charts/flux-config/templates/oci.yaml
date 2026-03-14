@@ -1,24 +1,49 @@
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: OCIRepository
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSetInputProvider
 metadata:
-  name: flux-config
+  name: flux-config-image
   namespace: flux-system
+  annotations:
+    fluxcd.controlplane.io/reconcileEvery: 5m
 spec:
-  interval: 5m
+  type: OCIArtifactTag
   url: oci://ghcr.io/den-vasyliev/a-box/flux-config
-  ref:
-    tag: latest
+  filter:
+    includeTag: ^\d+\.\d+\.\d+$
+    limit: 1
+  defaultValues:
+    tag: "0.1.0"
 ---
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
+apiVersion: fluxcd.controlplane.io/v1
+kind: ResourceSet
 metadata:
   name: flux-config
   namespace: flux-system
 spec:
-  interval: 5m
-  sourceRef:
+  inputsFrom:
+  - kind: ResourceSetInputProvider
+    name: flux-config-image
+  resources:
+  - apiVersion: source.toolkit.fluxcd.io/v1beta2
     kind: OCIRepository
-    name: flux-config
-  path: ./
-  prune: true
-  wait: true
+    metadata:
+      name: flux-config
+      namespace: flux-system
+    spec:
+      interval: 5m
+      url: oci://ghcr.io/den-vasyliev/a-box/flux-config
+      ref:
+        tag: << inputs.tag >>
+  - apiVersion: kustomize.toolkit.fluxcd.io/v1
+    kind: Kustomization
+    metadata:
+      name: flux-config
+      namespace: flux-system
+    spec:
+      interval: 5m
+      sourceRef:
+        kind: OCIRepository
+        name: flux-config
+      path: ./
+      prune: true
+      wait: true

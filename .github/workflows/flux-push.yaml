@@ -5,6 +5,8 @@ on:
     branches: [main]
     paths:
       - 'flux-config/**'
+    tags:
+      - 'v*'
 
 jobs:
   push:
@@ -23,14 +25,18 @@ jobs:
       - name: Login to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | flux registry login ghcr.io -u ${{ github.actor }} --password-stdin
 
+      - name: Set version
+        id: version
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tag=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=0.0.0-${{ github.sha }}" >> $GITHUB_OUTPUT
+          fi
+
       - name: Push OCI artifact
         run: |
-          flux push artifact oci://ghcr.io/${{ github.repository }}/flux-config:latest \
+          flux push artifact oci://ghcr.io/${{ github.repository }}/flux-config:${{ steps.version.outputs.tag }} \
             --path="./flux-config" \
             --source="${{ github.repositoryUrl }}" \
             --revision="${{ github.ref_name }}@sha1:${{ github.sha }}"
-
-      - name: Tag with git SHA
-        run: |
-          flux tag artifact oci://ghcr.io/${{ github.repository }}/flux-config:latest \
-            --tag=${{ github.sha }}
